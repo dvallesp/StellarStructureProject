@@ -14,6 +14,7 @@ import os
 import sys
 import numpy as np
 from scipy.interpolate import interp1d as interp
+import read_data
 
 
 #### Function write_pars_file
@@ -154,7 +155,8 @@ def do_pipeline_models_zams_work(Mmin=1, Mmax=15, howmany=200, x=0.7, y=0.292):
 
 #### Function pipeline_models_zams
 def pipeline_models_zams(Mmin=1, Mmax=15, howmany=200, x=0.7, y=0.292,
-                        output_folder='output', exec_name='zams'):
+                        output_folder='output', exec_name='zams',
+                        write_csv=False):
     '''
     Generates howmany models according to the parameters.
     This file  needs to be in the same directory as the executable.
@@ -167,6 +169,10 @@ def pipeline_models_zams(Mmin=1, Mmax=15, howmany=200, x=0.7, y=0.292,
     howmany: num. of models to generate
     x: hydrogen fraction
     y: helium fraction
+    output_folder: name of the folder that will be created to write the outputs
+    exec_name: name of the executable file for the simulation
+    write_csv: if True (def.: False), it will write a csv for each file,
+                containing the profiles.
     '''
     models = reasonable_MS_guess(Mmin, Mmax, howmany)
     failed = []
@@ -178,11 +184,14 @@ def pipeline_models_zams(Mmin=1, Mmax=15, howmany=200, x=0.7, y=0.292,
         print('Starting model no. {:04d}'.format(idx))
         write_pars_file(filename='custom_pars.pars',
                         mass=model[0], x=x, y=y, p=model[1], T=model[2],
-                        R=model[3], L=model[4], output_filename='output_{:04d}.dat'.format(idx))
+                        R=model[3], L=model[4],
+                        output_filename='output_{:04d}.dat'.format(idx))
         launch_model(parameters_filename='custom_pars.pars', exec_name=exec_name)
         if not has_succeeded(output_filename='output_{:04d}.dat'.format(idx)):
             failed.append(idx)
-
+        else:
+            if write_csv:
+                read_data.write_csv(filename='output_{:04d}.dat'.format(idx))
     os.system('rm ./' + exec_name)
     os.system('rm ./' + 'custom_pars.pars')
     os.chdir('..')
