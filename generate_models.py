@@ -107,7 +107,7 @@ def has_succeeded(output_filename='custom_output.dat', path=''):
     '''
     with open(os.path.join(path,output_filename),'r') as file:
         lines = lines = sum(1 for _ in file)
-    if lines == 4:
+    if lines == 4 or lines > 8000:
         return False
     return True
 
@@ -125,7 +125,7 @@ def launch_model(parameters_filename='custom_pars.pars', exec_name='zams'):
 
 
 #### Function do_pipeline_models_zams_work
-def do_pipeline_models_zams_work(Mmin=1, Mmax=15, howmany=200, x=0.7, y=0.292):
+def do_pipeline_models_zams_work(Mmin=1, Mmax=15, howmany=200, x=0.7, y=0.292, msguess = reasonable_MS_guess):
     '''
     Generates howmany models. Check if they work (just to assess the initial
     guesses).
@@ -135,10 +135,19 @@ def do_pipeline_models_zams_work(Mmin=1, Mmax=15, howmany=200, x=0.7, y=0.292):
     Mmin: low-mass end of the interval to generate models
     Mmax: high-mass end of the interval to generate models
     howmany: num. of models to generate
+    x: proportion of H
+    y: proportion of He
+    msguess: function for the initial guess to be tested
+
+    Returns:
+    converged_parameters: list of lists, each one of the latter containing the
+    parameters (as given by read_parms() in the read_data module). If the model
+    did not work, only the mass is attached to the list.
+    worked: bool vector containing whether the model worked or not.
     '''
-    models = reasonable_MS_guess(Mmin, Mmax, howmany)
+    models = msguess(Mmin, Mmax, howmany)
     worked = []
-    m = []
+    converged_parameters = []
     for idx, model in enumerate(models):
         print('Starting model no. {}'.format(idx))
         write_pars_file(filename='custom_pars.pars', path='',
@@ -147,10 +156,15 @@ def do_pipeline_models_zams_work(Mmin=1, Mmax=15, howmany=200, x=0.7, y=0.292):
                         output_filename='custom_output.dat')
         launch_model(parameters_filename='custom_pars.pars', exec_name='zams')
 
-        m.append(model[0])
-        worked.append(has_succeeded(output_filename='custom_output.dat',
-                        path=''))
-    return m, worked
+        if has_succeeded(output_filename='custom_output.dat',path=''):
+            worked.append(True)
+            converged_parameters.append(read_data.read_params(filename='custom_output.dat', path=''))
+
+        else:
+            worked.append(False)
+            converged_parameters.append(model[0])
+
+    return converged_parameters, worked
 
 
 #### Function pipeline_models_zams

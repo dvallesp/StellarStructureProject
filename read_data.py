@@ -108,3 +108,43 @@ def write_csv(filename, path=''):
                     'Del', 'Delad', 'Delrad']
     pd.DataFrame(values).to_csv(os.path.join(path,filename)+'.csv',
                                 sep=',',index=False, header=column_names)
+
+
+def read_params(filename, path=''):
+    '''
+    This function reads the simulation's outputs (only the parameters).
+    It returns a tuple with the parameters
+    D. Vallés
+
+    Parameters:
+    filename: name of the parameters file to output
+    path: path where to find the file
+
+    Returns: (as a list)
+    m: mass
+    x: H content
+    y: He content
+    p: central pressure
+    Tc: central temperature
+    R: radius
+    Lergs: total luminosity
+    Teff: effective (surface) temperature
+    Lsununits: luminosity (in solar units!)
+    '''
+    with open(os.path.join(path,filename)) as f:
+        line = f.readline().split()
+        m = float(line[1].replace(',','').replace('D','e'))
+        x = float(line[3].replace(',','').replace('D','e'))
+        y = float(line[5].replace(',','').replace('D','e'))
+        while f.readline().split()[0] != '*****FINAL':
+            continue
+        line = f.readline().split()
+        p = float(line[1].replace(',','').replace('D','e'))
+        Tc = float(line[3].replace(',','').replace('D','e'))
+        R = float(line[5].replace(',','').replace('D','e'))
+        Lergs = float(line[7].replace(',','').replace('D','e'))
+        line = f.readline().replace(':-',': -').split()
+        Teff = float(line[1].replace(',','').replace('D','e'))
+        Lsununits = 10**float(line[5].replace(',','').replace('D','e'))
+
+    return [m,x,y,p,Tc,R,Lergs,Teff,Lsununits]
