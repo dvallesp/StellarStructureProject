@@ -109,7 +109,11 @@ def has_succeeded(output_filename='custom_output.dat', path=''):
         lines = lines = sum(1 for _ in file)
     if lines == 4 or lines > 8000:
         return False
-    return True
+    with open(os.path.join(path,output_filename),'r') as file:
+        for line in file:
+            if line.split()[0] == '*****FINAL':
+                return True
+        return False
 
 
 #### Function launch_model
@@ -121,7 +125,7 @@ def launch_model(parameters_filename='custom_pars.pars', exec_name='zams'):
     this script.
     D. Vallés
     '''
-    os.system('./' + exec_name + ' < ' + parameters_filename)
+    os.system('./' + exec_name + ' < ' + parameters_filename + '>/dev/null 2>&1')
 
 
 #### Function do_pipeline_models_zams_work

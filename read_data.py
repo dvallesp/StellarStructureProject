@@ -132,7 +132,7 @@ def read_params(filename, path=''):
     Lsununits: luminosity (in solar units!)
     '''
     with open(os.path.join(path,filename)) as f:
-        line = f.readline().split()
+        line = f.readline().replace('MASS/MSUN=', 'MASS/MSUN= ').split()
         m = float(line[1].replace(',','').replace('D','e'))
         x = float(line[3].replace(',','').replace('D','e'))
         y = float(line[5].replace(',','').replace('D','e'))
