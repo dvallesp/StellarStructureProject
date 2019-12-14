@@ -8,3 +8,9 @@ Untitled1.ipynb
 __pycache__/
 zams
 /output/
+/output_old/
+/old_output/
+/output_cluster/
+custom_output.dat
+custom_pars.pars
+.custom_output.dat.swp
