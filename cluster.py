@@ -480,6 +480,14 @@ def kill_stars(parameters, t):
     Returns:
     New parameters having removed the dead stars
     '''
+    dying=[]
     for i in range(len(parameters)):
         if parameters[i][10] < t:
-            del parameters[i]
+            dying.append(i)
+    if len(dying)>0:
+        #print(dying)
+        dying.reverse()
+        newparameters = [parameters[i] for i in range(len(parameters)) if i not in dying]
+        return newparameters
+    else:
+        return parameters
