@@ -37,6 +37,7 @@ def metropolis(xi, nsamples, proposal):
     '''
     Simple implementation of the Metropolis algorithm in order to sample
     a pdf xi of a random variable.
+    D. Vallés
 
     Parameters:
     xi: pdf, passed as a function of a single variable
@@ -62,6 +63,7 @@ def salpeter_xi(M, mmin=0.42, mmax=18.2, salpeter_index=2.35):
     '''
     Returns the value of the Salpeter IMF (unnormalized; we will care about
     normalization to the total mass of the cluster later on).
+    D. Vallés
 
     Parameters:
     M: value of the mass for which the pdf is computed. Units are solar masses.
